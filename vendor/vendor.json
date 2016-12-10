@@ -1,6 +1,25 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "raLPNADEgBA8mv5dWISMK3g5MCg=",
+			"path": "github.com/line/line-bot-sdk-go/linebot",
+			"revision": "c6a434596b2b11dbd64a363b0bd34a5ad056c940",
+			"revisionTime": "2016-12-09T04:18:32Z"
+		},
+		{
+			"checksumSHA1": "9jjO5GjLa0XF/nfWihF02RoH4qc=",
+			"path": "golang.org/x/net/context",
+			"revision": "b1a2d6e8c8b5fc8f601ead62536f02a8e1b6217d",
+			"revisionTime": "2016-12-10T00:34:51Z"
+		},
+		{
+			"checksumSHA1": "WHc3uByvGaMcnSoI21fhzYgbOgg=",
+			"path": "golang.org/x/net/context/ctxhttp",
+			"revision": "b1a2d6e8c8b5fc8f601ead62536f02a8e1b6217d",
+			"revisionTime": "2016-12-10T00:34:51Z"
+		}
+	],
 	"rootPath": "github.com/satotoru/line-bot-beacon"
 }

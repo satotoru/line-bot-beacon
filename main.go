@@ -1,41 +1,45 @@
 package main
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
-	"flag"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 func main() {
 
-	var addr = flag.String("addr", ":8000", "アプリケーションのアドレス")
+	bot, err := linebot.New(os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_ACCESS_TOKEN"))
+	if err != nil {
+		log.Println("error")
+	}
 
 	http.HandleFunc("/line", func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-		body, err := ioutil.ReadAll(r.Body)
+		events, err := bot.ParseRequest(r)
 		if err != nil {
-			log.Println("error")
+			panic(err)
 		}
-		decoded, err := base64.StdEncoding.DecodeString(r.Header.Get("X-Line-Signature"))
-		if err != nil {
-			log.Println("error")
+
+		for _, event := range events {
+			if event.Type == linebot.EventTypeMessage {
+				_, err := bot.ReplyMessage(event.ReplyToken, event.Message).Do()
+				if err != nil {
+					panic(err)
+				}
+			} else if event.Type == linebot.EventTypeBeacon {
+				_, err := bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("ビーコンに近づきました")).Do()
+				if err != nil {
+					panic(err)
+				}
+			}
 		}
-		hash := hmac.New(sha256.New, []byte(os.Getenv("LINE_CHANNEL_SECRET")))
-		hash.Write(body)
-		if hmac.Equal(hash.Sum(nil), decoded) {
-			log.Println("success")
-		}
-		// Compare decoded signature and `hash.Sum(nil)` by using `hmac.Equal`
+
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte(`{}`))
 	})
 	// Webサーバーを開始
-	log.Println("Webサーバを開始します。ポート:", *addr)
+	log.Println("Webサーバを開始します。")
 	if err := http.ListenAndServe(":"+os.Getenv("PORT"), nil); err != nil {
 		panic(err)
 	}
